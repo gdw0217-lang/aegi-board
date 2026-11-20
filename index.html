@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>애기입장 계열 보드</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f5f2; --surface: #fcfcfb; --line: #e4e2dc; --grid: #ecebe6;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #8a8984;
+  --ch-aegi: #2a78d6; --ch-oegugin: #eb6834; --ch-daengnyang: #1baf7a;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b; --neutral: #9a9994;
+  --chip-bg: #f0efec; --empty-bg: #fdecec; --empty-ink: #a32a2a;
+  --wait-bg: #fff6e0; --sched-bg: #eaf2fd; --pub-bg: #eaf6ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110; --surface: #1a1a19; --line: #2e2e2c; --grid: #262624;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #8e8d86;
+    --ch-aegi: #3987e5; --ch-oegugin: #d95926; --ch-daengnyang: #199e70;
+    --chip-bg: #262624; --empty-bg: #3a1d1d; --empty-ink: #f0a0a0;
+    --wait-bg: #3a3018; --sched-bg: #1b2a3d; --pub-bg: #17301f;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #111110; --surface: #1a1a19; --line: #2e2e2c; --grid: #262624;
+  --text: #f0efec; --text-2: #c3c2b7; --muted: #8e8d86;
+  --ch-aegi: #3987e5; --ch-oegugin: #d95926; --ch-daengnyang: #199e70;
+  --chip-bg: #262624; --empty-bg: #3a1d1d; --empty-ink: #f0a0a0;
+  --wait-bg: #3a3018; --sched-bg: #1b2a3d; --pub-bg: #17301f;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 16px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 12px; }
+h1 { font-size: 20px; margin: 0; }
+.upd { color: var(--text-2); font-size: 13px; }
+.tabs { display: flex; gap: 6px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px; }
+.tab { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 999px; padding: 6px 14px; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--text); color: var(--surface); border-color: var(--text); }
+.tab .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+.card h2 { font-size: 15px; margin: 0 0 10px; }
+.note { color: var(--text-2); font-size: 13px; margin: 6px 0 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+.kpi .v { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 12px; color: var(--text-2); }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th, td { padding: 7px 6px; border-bottom: 1px solid var(--grid); text-align: left; vertical-align: middle; }
+th { color: var(--text-2); font-weight: 600; font-size: 12px; white-space: nowrap; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scroll { overflow-x: auto; }
+a { color: inherit; }
+.t { max-width: 320px; }
+.t a { text-decoration: none; }
+.t a:hover { text-decoration: underline; }
+.chip { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 1px 8px; font-size: 12px; background: var(--chip-bg); white-space: nowrap; }
+.chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.fmt { font-size: 11px; color: var(--text-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
+.fmt.new { border-color: var(--text-2); color: var(--text); font-weight: 600; }
+.grid-tbl td { font-size: 12.5px; }
+.cell { border-radius: 8px; padding: 5px 7px; line-height: 1.35; }
+.cell .k { font-size: 11px; color: var(--text-2); }
+.c-pub { background: var(--pub-bg); } .c-sch { background: var(--sched-bg); } .c-wait { background: var(--wait-bg); }
+.c-empty { background: var(--empty-bg); color: var(--empty-ink); font-weight: 600; }
+tr.past td { opacity: .55; }
+tr.today td:first-child { font-weight: 700; }
+.legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--text-2); margin-top: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.legend b { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+svg { display: block; }
+.bars text { fill: var(--text-2); font-size: 11px; }
+.tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); font-size: 12px; padding: 5px 8px; border-radius: 6px; display: none; z-index: 9; white-space: nowrap; }
+.vt { min-width: 560px; }
+.vt .t { min-width: 170px; }
+.grid-tbl { min-width: 620px; }
+.grid-tbl td:nth-child(n+3) { min-width: 150px; }
+.hb { position: relative; padding: 4px 0 18px; }
+.hb .row { display: flex; align-items: center; gap: 8px; height: 22px; cursor: default; }
+.hb .bar { height: 14px; border-radius: 0 4px 4px 0; min-width: 2px; }
+.hb .lab { font-size: 11.5px; color: var(--text-2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hb .wall { position: absolute; top: 0; bottom: 14px; border-left: 1px dashed var(--text-2); }
+.hb .wall span { position: absolute; bottom: -16px; left: 3px; font-size: 11px; color: var(--text-2); white-space: nowrap; }
+.hb .track { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+@media (max-width: 640px) { .hide-sm { display: none; } .vt { min-width: 480px; } .vt .t { min-width: 150px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>애기입장 계열 보드</h1><span class="upd" id="upd">불러오는 중…</span></header>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <main id="main"></main>
+  <p class="note">조회수는 매시간 기록, 이 페이지는 매시간 갱신됩니다. 1,200 = 첫 시험 묶음 벽. '노출 0' = 공개 2시간 넘었는데 30회 미만.</p>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+const CH = { aegi: "var(--ch-aegi)", oegugin: "var(--ch-oegugin)", daengnyang: "var(--ch-daengnyang)" };
+const ST = { "오름": ["var(--good)", "오름"], "벽 넘음·오름": ["var(--good)", "벽 넘음·오름"], "1만+": ["var(--good)", "1만+"],
+  "멈춤": ["var(--warn)", "멈춤"], "벽에서 멈춤": ["var(--warn)", "벽에서 멈춤"], "노출 0": ["var(--crit)", "노출 0"], "막 공개": ["var(--neutral)", "막 공개"] };
+const fmtN = n => n == null ? "–" : n >= 10000 ? (n / 10000).toFixed(n >= 100000 ? 0 : 1) + "만" : n.toLocaleString("ko-KR");
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const tip = document.getElementById("tip");
+function showTip(e, html) { tip.innerHTML = html; tip.style.display = "block"; const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+function hideTip() { tip.style.display = "none"; }
+let D, cur;
+try { cur = localStorage.getItem("aegi-board-tab") || "grid"; } catch (e) { cur = "grid"; }
+
+function spark(s, color, w = 110, h = 28) {
+  if (!s || s.length < 2) return "";
+  const xs = s.map(p => p[0]), ys = s.map(p => p[1]);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...ys, 1);
+  const X = x => 2 + (x - x0) / ((x1 - x0) || 1) * (w - 4), Y = y => h - 3 - y / y1 * (h - 6);
+  const pts = s.map(p => X(p[0]).toFixed(1) + "," + Y(p[1]).toFixed(1)).join(" ");
+  const data = esc(JSON.stringify(s));
+  return `<svg width="${w}" height="${h}" class="sp" data-s="${data}" data-w="${w}" data-h="${h}" aria-label="조회 흐름">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle class="hv" r="4" fill="${color}" stroke="var(--surface)" stroke-width="2" style="display:none"/></svg>`;
+}
+function bindSparks(root) {
+  root.querySelectorAll("svg.sp").forEach(svg => {
+    const s = JSON.parse(svg.dataset.s), w = +svg.dataset.w, h = +svg.dataset.h, c = svg.querySelector(".hv");
+    const xs = s.map(p => p[0]), x0 = Math.min(...xs), x1 = Math.max(...xs), y1 = Math.max(...s.map(p => p[1]), 1);
+    svg.addEventListener("mousemove", e => {
+      const r = svg.getBoundingClientRect(), hx = x0 + (e.clientX - r.left - 2) / (w - 4) * ((x1 - x0) || 1);
+      let best = s[0]; for (const p of s) if (Math.abs(p[0] - hx) < Math.abs(best[0] - hx)) best = p;
+      c.setAttribute("cx", 2 + (best[0] - x0) / ((x1 - x0) || 1) * (w - 4)); c.setAttribute("cy", h - 3 - best[1] / y1 * (h - 6)); c.style.display = "";
+      showTip(e, `공개 ${best[0]}시간 · <b>${best[1].toLocaleString("ko-KR")}회</b>`);
+    });
+    svg.addEventListener("mouseleave", () => { c.style.display = "none"; hideTip(); });
+  });
+}
+function bars(ch) {
+  const v = ch.videos; if (!v.length) return "";
+  const max = Math.max(...v.map(x => x.views), D.wall * 1.15), pct = n => (n / max * 78).toFixed(2);
+  // 막대 칸(track)은 전체 폭의 78%까지만 쓰고, 나머지는 숫자 글자 자리
+  let h = `<div class="hb" role="img" aria-label="편별 조회수"><div class="wall" style="left:${pct(D.wall)}%"><span>1,200 벽</span></div>`;
+  for (const x of v) h += `<div class="row g-b" data-t="${esc(x.title)}" data-v="${x.views}" data-p="${x.pub}"><div class="track">
+    <div class="bar" style="width:${pct(x.views)}%;background:${CH[ch.prof]}"></div><span class="lab">${fmtN(x.views)} · ${x.pub}</span></div></div>`;
+  return h + `</div>`;
+}
+function chanView(ch) {
+  const k = ch.kpi;
+  const tiles = [["공개한 편", k.published], ["총 조회", fmtN(k.total)], ["최근 24시간 늘어난 조회", "+" + fmtN(k.d24)],
+    ["1,200 벽 넘은 편", `${k.passed} / ${k.published}`], ["노출 0 편", k.zero], ["평균 좋아요율", k.like_rate + "%"], ["최고 조회", fmtN(k.best)]];
+  let h = `<div class="kpis">${tiles.map(t => `<div class="kpi"><div class="v">${t[1]}</div><div class="l">${t[0]}</div></div>`).join("")}</div>`;
+  h += `<section class="card"><h2>편별 조회수 (위가 최근 공개)</h2>${bars({ ...ch, videos: ch.videos })}</section>`;
+  h += `<section class="card"><h2>공개한 편</h2><div class="scroll"><table class="vt"><thead><tr><th>제목</th><th class="hide-sm">방식</th><th class="hide-sm">공개</th>
+    <th class="n">조회</th><th class="n hide-sm">1시간</th><th class="n hide-sm">6시간</th><th class="n hide-sm">24시간</th><th class="n">좋아요율</th><th>상태</th><th>흐름</th></tr></thead><tbody>`;
+  for (const v of ch.videos) {
+    const s = ST[v.state] || ["var(--neutral)", v.state];
+    h += `<tr><td class="t"><a href="${v.url}" target="_blank" rel="noopener">${esc(v.title)}</a></td>
+      <td class="hide-sm"><span class="fmt ${v.fmt === "새 꼴" ? "new" : ""}">${v.fmt}</span></td><td class="hide-sm">${v.pub}</td>
+      <td class="n"><b>${v.views.toLocaleString("ko-KR")}</b></td><td class="n hide-sm">${fmtN(v.h1)}</td><td class="n hide-sm">${fmtN(v.h6)}</td><td class="n hide-sm">${fmtN(v.h24)}</td>
+      <td class="n">${v.like_rate}%</td><td><span class="chip"><i style="background:${s[0]}"></i>${s[1]}</span></td><td>${spark(v.series, CH[ch.prof])}</td></tr>`;
+  }
+  h += `</tbody></table></div><p class="note">방식: 옛 방식 = 11/19 진단 전(대조군) · 진단 반영 = 첫 화면·원래 소리·전환점 고친 편 · 새 꼴 = 11/20 100만 공식(이야기형).</p></section>`;
+  h += `<section class="card"><h2>유튜브에 예약된 편 (${ch.scheduled.length})</h2><div class="scroll"><table><thead><tr><th>공개 예정</th><th>제목</th><th>방식</th></tr></thead><tbody>`;
+  for (const s of ch.scheduled) h += `<tr><td>${s.at}</td><td class="t">${esc(s.title)}</td><td><span class="fmt ${s.fmt === "새 꼴" ? "new" : ""}">${s.fmt}</span></td></tr>`;
+  return h + `</tbody></table></div></section>`;
+}
+function gridView() {
+  const today = D.updated.slice(5, 10).replace("-", "/");
+  let h = `<section class="card"><h2>예약표 현황 — 하루 3칸 05:20 · 11:20 · 17:20</h2><div class="scroll"><table class="grid-tbl"><thead><tr><th>날짜</th><th>칸</th>`;
+  for (const c of D.channels) h += `<th><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${CH[c.prof]};margin-right:5px"></span>${c.name}</th>`;
+  h += `</tr></thead><tbody>`;
+  let empty = 0;
+  for (const r of D.grid) {
+    h += `<tr class="${r.past ? "past" : ""} ${r.day === today ? "today" : ""}"><td>${r.day}</td><td>${r.slot}</td>`;
+    for (const c of D.channels) {
+      const x = r[c.prof] || { kind: "빈 칸" };
+      const cls = { "공개": "c-pub", "예약됨": "c-sch", "대기(1시간 전 자동)": "c-wait", "빈 칸": "c-empty" }[x.kind] || "";
+      if (x.kind === "빈 칸" && !r.past) empty++;
+      const body = x.kind === "공개" ? `${esc(x.title)}<br><b>${fmtN(x.views)}회</b>` : x.kind === "빈 칸" ? (r.past ? "–" : "빈 칸") : esc(x.title);
+      h += `<td><div class="cell ${r.past && x.kind === "빈 칸" ? "" : cls}"><div class="k">${x.kind === "빈 칸" ? "" : x.kind}</div>${body}</div></td>`;
+    }
+    h += `</tr>`;
+  }
+  h += `</tbody></table></div>
+    <div class="legend"><span><b style="background:var(--pub-bg);border:1px solid var(--line)"></b>공개됨(조회수)</span><span><b style="background:var(--sched-bg);border:1px solid var(--line)"></b>예약됨 — 유튜브에 이미 올림</span>
+    <span><b style="background:var(--wait-bg);border:1px solid var(--line)"></b>대기 — 칸 1시간 전 자동 업로드</span><span><b style="background:var(--empty-bg);border:1px solid var(--line)"></b>빈 칸 — 채울 편 없음</span></div></section>`;
+  const head = `<div class="kpis">${D.channels.map(c => `<div class="kpi"><div class="v">${c.scheduled.length}</div><div class="l">${c.name} 예약된 편</div></div>`).join("")}
+    <div class="kpi"><div class="v">${empty}</div><div class="l">앞으로 빈 칸</div></div></div>`;
+  return head + h;
+}
+function render() {
+  const tabs = [["grid", "예약표", null], ...D.channels.map(c => [c.prof, c.name, CH[c.prof]])];
+  document.getElementById("tabs").innerHTML = tabs.map(t => `<button class="tab" role="tab" aria-selected="${t[0] === cur}" data-k="${t[0]}">${t[2] ? `<span class="dot" style="background:${t[2]}"></span>` : ""}${t[1]}</button>`).join("");
+  document.querySelectorAll(".tab").forEach(b => b.onclick = () => { cur = b.dataset.k; try { localStorage.setItem("aegi-board-tab", cur); } catch (e) {} render(); });
+  const main = document.getElementById("main");
+  const ch = D.channels.find(c => c.prof === cur);
+  main.innerHTML = ch ? chanView(ch) : gridView();
+  bindSparks(main);
+  main.querySelectorAll(".g-b").forEach(g => {
+    g.addEventListener("mousemove", e => showTip(e, `${esc(g.dataset.t)}<br><b>${(+g.dataset.v).toLocaleString("ko-KR")}회</b> · ${g.dataset.p} 공개`));
+    g.addEventListener("mouseleave", hideTip);
+  });
+}
+fetch("data/board.json?t=" + Date.now()).then(r => r.json()).then(d => {
+  D = d; if (cur !== "grid" && !D.channels.some(c => c.prof === cur)) cur = "grid";
+  document.getElementById("upd").textContent = "갱신 " + d.updated;
+  render();
+}).catch(() => { document.getElementById("upd").textContent = "데이터를 못 불러왔어요"; });
+</script>
+</body>
+</html>
