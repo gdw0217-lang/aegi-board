@@ -68,6 +68,9 @@ a { color: inherit; }
 .cell .k { font-size: 11px; color: var(--text-2); }
 .c-pub { background: var(--pub-bg); } .c-sch { background: var(--sched-bg); } .c-wait { background: var(--wait-bg); }
 .c-empty { background: var(--empty-bg); color: var(--empty-ink); font-weight: 600; }
+.cell .k.ok { color: var(--text); font-weight: 700; }
+.c-sch { border: 1.5px solid var(--ch-aegi); }
+.c-wait { border: 1.5px dashed var(--line); }
 tr.past td { opacity: .55; }
 tr.today td:first-child { font-weight: 700; }
 .legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--text-2); margin-top: 8px; }
@@ -95,7 +98,7 @@ svg { display: block; }
   <header><h1>애기입장 계열 보드</h1><span class="upd" id="upd">불러오는 중…</span></header>
   <nav class="tabs" id="tabs" role="tablist"></nav>
   <main id="main"></main>
-  <p class="note">조회수는 매시간 기록, 이 페이지는 매시간 갱신됩니다. 1,200 = 첫 시험 묶음 벽. '노출 0' = 공개 2시간 넘었는데 30회 미만.</p>
+  <p class="note">조회수는 매시간 기록, 이 페이지는 매시간 갱신됩니다. 1,200 = 첫 시험 묶음 벽, 2,000 넘으면 '벽 넘음'. '노출 0' = 공개 2시간 넘었는데 30회 미만.</p>
 </div>
 <div class="tip" id="tip"></div>
 <script>
@@ -136,9 +139,9 @@ function bindSparks(root) {
 }
 function bars(ch) {
   const v = ch.videos; if (!v.length) return "";
-  const max = Math.max(...v.map(x => x.views), D.wall * 1.15), pct = n => (n / max * 78).toFixed(2);
+  const P = D.pass || 2000, max = Math.max(...v.map(x => x.views), P * 1.15), pct = n => (n / max * 78).toFixed(2);
   // 막대 칸(track)은 전체 폭의 78%까지만 쓰고, 나머지는 숫자 글자 자리
-  let h = `<div class="hb" role="img" aria-label="편별 조회수"><div class="wall" style="left:${pct(D.wall)}%"><span>1,200 벽</span></div>`;
+  let h = `<div class="hb" role="img" aria-label="편별 조회수"><div class="wall" style="left:${pct(P)}%"><span>벽 넘음 기준 ${P.toLocaleString("ko-KR")}</span></div>`;
   for (const x of v) h += `<div class="row g-b" data-t="${esc(x.title)}" data-v="${x.views}" data-p="${x.pub}"><div class="track">
     <div class="bar" style="width:${pct(x.views)}%;background:${CH[ch.prof]}"></div><span class="lab">${fmtN(x.views)} · ${x.pub}</span></div></div>`;
   return h + `</div>`;
@@ -146,7 +149,7 @@ function bars(ch) {
 function chanView(ch) {
   const k = ch.kpi;
   const tiles = [["공개한 편", k.published], ["총 조회", fmtN(k.total)], ["최근 24시간 늘어난 조회", "+" + fmtN(k.d24)],
-    ["1,200 벽 넘은 편", `${k.passed} / ${k.published}`], ["노출 0 편", k.zero], ["평균 좋아요율", k.like_rate + "%"], ["최고 조회", fmtN(k.best)]];
+    ["벽 넘은 편 (2,000+)", `${k.passed} / ${k.published}`], ["노출 0 편", k.zero], ["평균 좋아요율", k.like_rate + "%"], ["최고 조회", fmtN(k.best)]];
   let h = `<div class="kpis">${tiles.map(t => `<div class="kpi"><div class="v">${t[1]}</div><div class="l">${t[0]}</div></div>`).join("")}</div>`;
   h += `<section class="card"><h2>편별 조회수 (위가 최근 공개)</h2>${bars({ ...ch, videos: ch.videos })}</section>`;
   h += `<section class="card"><h2>공개한 편</h2><div class="scroll"><table class="vt"><thead><tr><th>제목</th><th class="hide-sm">방식</th><th class="hide-sm">공개</th>
@@ -168,22 +171,23 @@ function gridView() {
   let h = `<section class="card"><h2>예약표 현황 — 하루 3칸 05:20 · 11:20 · 17:20</h2><div class="scroll"><table class="grid-tbl"><thead><tr><th>날짜</th><th>칸</th>`;
   for (const c of D.channels) h += `<th><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${CH[c.prof]};margin-right:5px"></span>${c.name}</th>`;
   h += `</tr></thead><tbody>`;
-  let empty = 0;
+  let empty = 0; const sched = {}, pend = {};
   for (const r of D.grid) {
     h += `<tr class="${r.past ? "past" : ""} ${r.day === today ? "today" : ""}"><td>${r.day}</td><td>${r.slot}</td>`;
     for (const c of D.channels) {
       const x = r[c.prof] || { kind: "빈 칸" };
-      const cls = { "공개": "c-pub", "예약됨": "c-sch", "대기(1시간 전 자동)": "c-wait", "빈 칸": "c-empty" }[x.kind] || "";
-      if (x.kind === "빈 칸" && !r.past) empty++;
+      const cls = { "공개": "c-pub", "예약됨": "c-sch", "예약 전": "c-wait", "빈 칸": "c-empty" }[x.kind] || "";
+      if (!r.past) { if (x.kind === "빈 칸") empty++; else if (x.kind === "예약됨") sched[c.prof] = (sched[c.prof] || 0) + 1; else if (x.kind === "예약 전") pend[c.prof] = (pend[c.prof] || 0) + 1; }
+      const lab = { "공개": "공개됨", "예약됨": "✓ 유튜브 예약됨", "예약 전": "유튜브 예약 전 · 칸 1시간 전 자동", "빈 칸": "" }[x.kind] ?? x.kind;
       const body = x.kind === "공개" ? `${esc(x.title)}<br><b>${fmtN(x.views)}회</b>` : x.kind === "빈 칸" ? (r.past ? "–" : "빈 칸") : esc(x.title);
-      h += `<td><div class="cell ${r.past && x.kind === "빈 칸" ? "" : cls}"><div class="k">${x.kind === "빈 칸" ? "" : x.kind}</div>${body}</div></td>`;
+      h += `<td><div class="cell ${r.past && x.kind === "빈 칸" ? "" : cls}"><div class="k${x.kind === "예약됨" ? " ok" : ""}">${lab}</div>${body}</div></td>`;
     }
     h += `</tr>`;
   }
   h += `</tbody></table></div>
-    <div class="legend"><span><b style="background:var(--pub-bg);border:1px solid var(--line)"></b>공개됨(조회수)</span><span><b style="background:var(--sched-bg);border:1px solid var(--line)"></b>예약됨 — 유튜브에 이미 올림</span>
-    <span><b style="background:var(--wait-bg);border:1px solid var(--line)"></b>대기 — 칸 1시간 전 자동 업로드</span><span><b style="background:var(--empty-bg);border:1px solid var(--line)"></b>빈 칸 — 채울 편 없음</span></div></section>`;
-  const head = `<div class="kpis">${D.channels.map(c => `<div class="kpi"><div class="v">${c.scheduled.length}</div><div class="l">${c.name} 예약된 편</div></div>`).join("")}
+    <div class="legend"><span><b style="background:var(--pub-bg);border:1px solid var(--line)"></b>공개됨(조회수)</span><span><b style="background:var(--sched-bg);border:1px solid var(--line)"></b>✓ 유튜브 예약됨 — 유튜브에 올라가 공개 시각이 걸린 편</span>
+    <span><b style="background:var(--wait-bg);border:1px solid var(--line)"></b>유튜브 예약 전 — 영상은 다 됐고, 칸 1시간 전에 자동으로 올라감</span><span><b style="background:var(--empty-bg);border:1px solid var(--line)"></b>빈 칸 — 채울 편 없음</span></div></section>`;
+  const head = `<div class="kpis">${D.channels.map(c => `<div class="kpi"><div class="v">${sched[c.prof] || 0}<span style="font-size:14px;font-weight:500;color:var(--text-2)"> + 예약 전 ${pend[c.prof] || 0}</span></div><div class="l">${c.name} ✓ 유튜브 예약됨</div></div>`).join("")}
     <div class="kpi"><div class="v">${empty}</div><div class="l">앞으로 빈 칸</div></div></div>`;
   return head + h;
 }
