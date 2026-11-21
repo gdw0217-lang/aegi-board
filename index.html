@@ -63,6 +63,9 @@ a { color: inherit; }
 .chip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .fmt { font-size: 11px; color: var(--text-2); border: 1px solid var(--line); border-radius: 6px; padding: 0 5px; white-space: nowrap; }
 .fmt.new { border-color: var(--text-2); color: var(--text); font-weight: 600; }
+.fmt.fix { border-color: var(--good); color: var(--good); font-weight: 700; }
+.fmt.old { border-color: var(--crit); color: var(--crit); }
+.cell .fmt { display: inline-block; margin-top: 3px; }
 .grid-tbl td { font-size: 12.5px; }
 .cell { border-radius: 8px; padding: 5px 7px; line-height: 1.35; }
 .cell .k { font-size: 11px; color: var(--text-2); }
@@ -162,15 +165,16 @@ function chanView(ch) {
   for (const v of ch.videos) {
     const s = ST[v.state] || ["var(--neutral)", v.state];
     h += `<tr><td class="t"><a href="${v.url}" target="_blank" rel="noopener">${esc(v.title)}</a></td>
-      <td class="hide-sm"><span class="fmt ${v.fmt === "새 꼴" ? "new" : ""}">${v.fmt}</span></td><td class="hide-sm">${v.pub}</td>
+      <td class="hide-sm">${fmtTag(v.fmt)}</td><td class="hide-sm">${v.pub}</td>
       <td class="n"><b>${v.views.toLocaleString("ko-KR")}</b></td><td class="n hide-sm">${fmtN(v.h1)}</td><td class="n hide-sm">${fmtN(v.h6)}</td><td class="n hide-sm">${fmtN(v.h24)}</td>
       <td class="n">${v.like_rate}%</td><td><span class="chip"><i style="background:${s[0]}"></i>${s[1]}</span></td><td>${spark(v.series, CH[ch.prof])}</td></tr>`;
   }
-  h += `</tbody></table></div><p class="note">방식: 옛 방식 = 11/19 진단 전(대조군) · 진단 반영 = 첫 화면·원래 소리·전환점 고친 편 · 새 꼴 = 11/20 100만 공식(이야기형).</p></section>`;
+  h += `</tbody></table></div><p class="note">방식: <b style="color:var(--good)">✓ 벽 수리</b> = 11/21 벽 대책 반영(위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리) · 새 꼴 = 11/20 100만 공식 · 진단 반영 = 11/19 판(노란 카드·이름표 제목 — 벽에 박히던 꼴) · 옛 방식 = 11/19 진단 전.</p></section>`;
   h += schedCard([{ ...ch }], false) + pendCard([{ ...ch }], false);
   return h;
 }
-const fmtTag = f => `<span class="fmt ${f === "새 꼴" ? "new" : ""}">${f}</span>`;
+const fmtCls = f => f === "벽 수리" ? "fix" : f === "새 꼴" ? "new" : "old";
+const fmtTag = f => f ? `<span class="fmt ${fmtCls(f)}">${f === "벽 수리" ? "✓ 벽 수리" : f}</span>` : "";
 function schedCard(chs, withCh) {
   const rows = chs.flatMap(c => c.scheduled.map(s => ({ ...s, c }))).sort((a, b) => a.at.localeCompare(b.at));
   let h = `<section class="card sec-sch"><h2>✓ 유튜브에 예약된 편 (${rows.length})</h2><p class="note" style="margin:-4px 0 8px">유튜브에 올라가 공개 시각이 걸려 있음 — 그 시각에 자동 공개</p><div class="scroll"><table><thead><tr><th>공개 예정</th>${withCh ? "<th>채널</th>" : ""}<th>제목</th><th class="hide-sm">방식</th></tr></thead><tbody>`;
@@ -187,7 +191,7 @@ function pendCard(chs, withCh) {
 }
 function gridView() {
   const today = D.updated.slice(5, 10).replace("-", "/");
-  let h = `<section class="card"><h2>예약표 현황 — 하루 3칸 05:20 · 11:20 · 17:20</h2><div class="scroll"><table class="grid-tbl"><thead><tr><th>날짜</th><th>칸</th>`;
+  let h = `<section class="card"><h2>예약표 현황 — 하루 3칸 05:20 · 11:20 · 17:20</h2><p class="note" style="margin:-4px 0 8px">칸 아래 표시: <b style="color:var(--good)">✓ 벽 수리</b> = 11/21 벽 대책 반영한 판 · <span style="color:var(--crit)">진단 반영·옛 방식</span> = 벽에 박히던 예전 꼴(이미 유튜브에 예약돼 못 고친 편 포함) · 새 꼴 = 11/20 판</p><div class="scroll"><table class="grid-tbl"><thead><tr><th>날짜</th><th>칸</th>`;
   for (const c of D.channels) h += `<th><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${CH[c.prof]};margin-right:5px"></span>${c.name}</th>`;
   h += `</tr></thead><tbody>`;
   const empty = {};
@@ -199,7 +203,7 @@ function gridView() {
       if (!r.past && x.kind === "빈 칸") empty[c.prof] = (empty[c.prof] || 0) + 1;
       const lab = { "공개": "공개됨", "예약됨": "✓ 유튜브 예약됨", "예약 대기": "⏳ 예약 대기 (보유)", "빈 칸": "" }[x.kind] ?? x.kind;
       const body = x.kind === "공개" ? `${esc(x.title)}<br><b>${fmtN(x.views)}회</b>` : x.kind === "빈 칸" ? (r.past ? "–" : "빈 칸") : esc(x.title);
-      h += `<td><div class="cell ${r.past && x.kind === "빈 칸" ? "" : cls}"><div class="k${x.kind === "예약됨" ? " ok" : ""}">${lab}</div>${body}</div></td>`;
+      h += `<td><div class="cell ${r.past && x.kind === "빈 칸" ? "" : cls}"><div class="k${x.kind === "예약됨" ? " ok" : ""}">${lab}</div>${body}${x.fmt ? "<br>" + fmtTag(x.fmt) : ""}</div></td>`;
     }
     h += `</tr>`;
   }
