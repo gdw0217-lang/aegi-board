@@ -220,6 +220,16 @@ dialog::backdrop { background: rgba(0,0,0,0.45); }
 .fmt.old { border-color: var(--crit); color: var(--crit); font-weight: 400; }
 .sch .c-empty { border: 1px dashed var(--crit); } .sch .c-empty .k { color: var(--crit); margin: 0; }
 .st.zero { color: var(--crit); font-weight: 600; }
+/* 11/25 우진 님: 예전 판 '편별 조회수' 막대그래프 다시 — 예전 .hb 그대로 */
+.hb { position: relative; padding: 4px 0 18px; }
+.hb .row { display: flex; align-items: center; gap: 8px; height: 22px; cursor: pointer; }
+.hb .row:hover { background: var(--hover); }
+.hb .bar { height: 14px; border-radius: 0 4px 4px 0; min-width: 2px; }
+.hb .lab { position: relative; background: var(--card); padding: 0 3px; font-size: 11.5px; color: var(--ink2); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.hb .wall { position: absolute; top: 0; bottom: 14px; border-left: 1px dashed var(--ink2); pointer-events: none; }
+.hb .wall span { position: absolute; bottom: -16px; left: 3px; font-size: 11px; color: var(--ink2); white-space: nowrap; }
+.hb .track { flex: 1; display: flex; align-items: center; gap: 6px; min-width: 0; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page); font-size: 12px; padding: 5px 8px; border-radius: 6px; display: none; z-index: 9; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -322,6 +332,11 @@ function render() {
     <h2>벽 단계</h2><p class="desc">지금 조회 구간 · 공개 6시간 전은 '시험 중' · 최근 6시간에 3% 이상 늘면 '성장 중'(지금 ${moving}편)</p>
     <div class="bands">${BANDS.map(([b, c]) => `<div class="band"><div class="t"><i style="background:var(${c})"></i>${b}</div><div class="n">${counts[b]}</div></div>`).join("")}</div>
   </section>
+  <section class="card">
+    <h2>편별 조회수 (위가 최근 공개)</h2><p class="desc">한눈에 보기 · 점선 = 벽 넘음 기준 · 줄을 누르면 그 편 자세히</p>
+    <div class="legend"><span><i style="background:var(--s3)"></i>✓ 벽 수리</span><span><i style="background:var(--s1)"></i>예전 꼴</span></div>
+    ${bars(d)}
+  </section>
   <div class="grid two">
     <div class="card"><h2>시간당 조회</h2><p class="desc">최근 7일 · 채널 전체 · 기록 사이 증가를 시간당으로</p><div class="chart"><canvas id="cHour"></canvas></div></div>
     <div class="card"><h2>날짜별 조회</h2><p class="desc">유튜브 분석 · 1~2일 늦음</p><div class="chart"><canvas id="cDay"></canvas></div></div>
@@ -365,6 +380,10 @@ function render() {
   ["q", "fb", "ff"].forEach(id => $("#" + id).oninput = e => { window["_" + id] = e.target.value; table(); });
   $("#sk").onchange = e => { sortKey = e.target.value; sortDir = -1; table(); };
   document.querySelectorAll("th[data-k]").forEach(th => th.onclick = () => { const k = th.dataset.k; sortDir = sortKey === k ? -sortDir : -1; sortKey = k; table(); });
+  document.querySelectorAll(".g-b").forEach(g => {
+    g.onmousemove = e => showTip(e, `${esc(g.dataset.t)}<br><b>${(+g.dataset.v).toLocaleString("ko-KR")}회</b> · ${g.dataset.p} 공개${g.dataset.k ? " · " + g.dataset.k : ""}`);
+    g.onmouseleave = hideTip; g.onclick = () => { hideTip(); detail(g.dataset.id); };
+  });
   table(); chartsDraw();
 }
 
@@ -376,6 +395,20 @@ function relTxt(v) { if (v.rel == null) return "<span class='dim'>-</span>"; con
 const fmtCls = f => f === "벽 수리" ? "fix" : f === "새 꼴" ? "new" : "old";
 const fmtTag = f => f ? `<span class="fmt ${fmtCls(f)}">${f === "벽 수리" ? "✓ 벽 수리" : esc(f)}</span>` : "";
 const FMTS = ["벽 수리", "새 꼴", "진단 반영", "옛 방식"];
+// 11/25 우진 님: 예전 판 '한눈에 보는 막대그래프' 다시 — 예전 bars() 그대로(색만 새 판 산점도와 같게: 초록 = 벽 수리)
+let tip;
+function showTip(e, html) { tip = tip || document.body.appendChild(Object.assign(document.createElement("div"), { className: "tip" })); tip.innerHTML = html; tip.style.display = "block"; const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
+function hideTip() { if (tip) tip.style.display = "none"; }
+function bars(d) {
+  const v = d.videos.slice().sort((a, b) => (b.published || "").localeCompare(a.published || "")); if (!v.length) return "";
+  const P = d.pass || 2000, max = Math.max(...v.map(x => x.views), P * 1.15), pct = n => (n / max * 78).toFixed(2);
+  // 막대 칸(track)은 전체 폭의 78%까지만 쓰고, 나머지는 숫자 글자 자리
+  let h = `<div class="hb" role="img" aria-label="편별 조회수"><div class="wall" style="left:${pct(P)}%"><span>벽 넘음 기준 ${P.toLocaleString("ko-KR")}</span></div>`;
+  for (const x of v) { const pub = (x.pub_kst || "").slice(5).replace("-", "/");
+    h += `<div class="row g-b" data-id="${esc(x.id)}" data-t="${esc(x.title)}" data-v="${x.views}" data-p="${esc(pub)}" data-k="${esc(x.key || "")}"><div class="track">
+    <div class="bar" style="width:${pct(x.views)}%;background:var(${x.fmt === "벽 수리" ? "--s3" : "--s1"})"></div><span class="lab">${fmt(x.views)} · ${esc(pub)}${x.key ? " · " + esc(x.key) : ""}</span></div></div>`; }
+  return h + `</div>`;
+}
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
 
 function spark(v) {
