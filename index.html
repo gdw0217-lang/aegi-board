@@ -218,6 +218,8 @@ dialog::backdrop { background: rgba(0,0,0,0.45); }
 .fmt.fix { border-color: var(--good-ink); color: var(--good-ink); }
 .fmt.new { border-color: var(--ink2); color: var(--ink); }
 .fmt.old { border-color: var(--crit); color: var(--crit); font-weight: 400; }
+.fmt.anal { border-color: #2f6fd6; color: #2f6fd6; }
+.fmt small { font-weight: 400; opacity: .8; }
 .sch .c-empty { border: 1px dashed var(--crit); } .sch .c-empty .k { color: var(--crit); margin: 0; }
 .st.zero { color: var(--crit); font-weight: 600; }
 /* 11/25 우진 님: 예전 판 '편별 조회수' 막대그래프 다시 — 예전 .hb 그대로 */
@@ -241,7 +243,7 @@ dialog::backdrop { background: rgba(0,0,0,0.45); }
   <div class="tabs" role="tablist" id="tabs"></div>
   <main id="view"></main>
   <p class="note">조회·좋아요·댓글은 매시 :17 기록(views_ts)으로 매시 :22에 갱신합니다. 평균 시청률·끝까지 본 %·유입·검색어·시청자는 유튜브 분석 데이터라 하루 한 번 받고, 원래 1~2일 늦게 들어옵니다(최근 영상은 '-'). 벽 기준: 1,200 근처에서 멈추는 벽, 2,000 넘으면 벽 넘음 · Y 판정 6시간 2,000+ → 24시간 1만+ → 72시간 10만+.</p>
-  <p class="note">채널 세 곳(애기입장 · 외국인시점 · 댕냥입장) 운영 확인용. '분석' 탭은 팀장이 쓴 진단 문서(research/analytics 최신본)입니다. 방식: <span class="fmt fix">✓ 벽 수리</span> = 11/21 벽 대책(위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리) · 새 꼴 = 11/20 판 · 진단 반영 = 11/19 판 · 옛 방식 = 그 전.</p>
+  <p class="note">채널 세 곳(애기입장 · 외국인시점 · 댕냥입장) 운영 확인용. '분석' 탭은 팀장이 쓴 진단 문서(research/analytics 최신본)입니다. 방식(이름 앞 날짜 = 고치거나 점검한 날): <span class="fmt anal">11/26 분석 반영</span> 댕냥 AI 해설 첫 문장만+원래 소리·애기 첫 1초 상대+질문 첫 자막·외국인 친절·보답 소재 · <span class="fmt fix">✓ 11/25 점검 소재</span> 소재 기준 바꿈 · <span class="fmt fix">✓ 11/21 벽 수리</span> 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리 · <span class="fmt new">11/20 새 꼴</span> · <span class="fmt old">11/19 진단 반영 · 11/18 첫판</span> 예전 꼴. <b>만듦</b> = 그 영상 파일을 마지막으로 렌더한 때.</p>
 </div>
 <dialog id="dlg"></dialog>
 <script>
@@ -334,7 +336,7 @@ function render() {
   </section>
   <section class="card">
     <h2>편별 조회수 (위가 최근 공개)</h2><p class="desc">한눈에 보기 · 점선 = 벽 넘음 기준 · 줄을 누르면 그 편 자세히</p>
-    <div class="legend"><span><i style="background:var(--s3)"></i>✓ 벽 수리</span><span><i style="background:var(--s1)"></i>예전 꼴</span></div>
+    <div class="legend"><span><i style="background:var(--s3)"></i>✓ 11/21 벽 수리 뒤 판(11/21·11/25·11/26)</span><span><i style="background:var(--s1)"></i>11/20 이전 판</span></div>
     ${bars(d)}
   </section>
   <div class="grid two">
@@ -343,7 +345,7 @@ function render() {
   </div>
   <section class="card">
     <h2>영상별</h2><p class="desc">줄을 누르면 조회가 늘어난 모양·좋아요/댓글·어디서 넘겼는지가 열립니다.</p>
-    <div class="glossary"><div><b>계속 시청율</b> 첫 1~2초에 넘기지 않고 본 조회 ÷ 조회(engagedViews 근사값 — 스튜디오 '계속 시청함'에 가까움). 11/22 분석: 40% 아래 편은 전부 멈췄어요.</div><div><b>평균 시청률</b> 영상 길이 대비 평균 몇 % 봤나. <b>100%를 넘으면 끝까지 보고 다시 본 것</b>. 1만 넘은 편들은 대부분 100% 넘음.</div><div><b>끝까지 본 %</b> 마지막 장면까지 남아 있던 시청자 비율. <b>비슷한 쇼츠 중</b> 같은 길이 다른 쇼츠보다 끝까지 더 붙잡았나(유튜브 계산, '상위 20%'면 10개 중 8개보다 나음).</div><div><b>1시간~7일</b> 공개하고 그만큼 지났을 때 조회. <b>단계</b> 지금 조회 구간, ▲ 최근 6시간에 3% 넘게 늘면 성장 / ■ 멈춤. <b>방식</b> <span class="fmt fix">✓ 벽 수리</span> 초록 = 11/21 벽 대책 반영 판, 빨강 = 예전 꼴.</div></div>
+    <div class="glossary"><div><b>계속 시청율</b> 첫 1~2초에 넘기지 않고 본 조회 ÷ 조회(engagedViews 근사값 — 스튜디오 '계속 시청함'에 가까움). 11/22 분석: 40% 아래 편은 전부 멈췄어요.</div><div><b>평균 시청률</b> 영상 길이 대비 평균 몇 % 봤나. <b>100%를 넘으면 끝까지 보고 다시 본 것</b>. 1만 넘은 편들은 대부분 100% 넘음.</div><div><b>끝까지 본 %</b> 마지막 장면까지 남아 있던 시청자 비율. <b>비슷한 쇼츠 중</b> 같은 길이 다른 쇼츠보다 끝까지 더 붙잡았나(유튜브 계산, '상위 20%'면 10개 중 8개보다 나음).</div><div><b>1시간~7일</b> 공개하고 그만큼 지났을 때 조회. <b>단계</b> 지금 조회 구간, ▲ 최근 6시간에 3% 넘게 늘면 성장 / ■ 멈춤. <b>방식</b> 방식(이름 앞 날짜 = 고치거나 점검한 날): <span class="fmt anal">11/26 분석 반영</span> 댕냥 AI 해설 첫 문장만+원래 소리·애기 첫 1초 상대+질문 첫 자막·외국인 친절·보답 소재 · <span class="fmt fix">✓ 11/25 점검 소재</span> 소재 기준 바꿈 · <span class="fmt fix">✓ 11/21 벽 수리</span> 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리 · <span class="fmt new">11/20 새 꼴</span> · <span class="fmt old">11/19 진단 반영 · 11/18 첫판</span> 예전 꼴. <b>만듦</b> = 그 영상 파일을 마지막으로 렌더한 때.</div></div>
     <div class="tools"><input id="q" placeholder="제목 검색" value="${window._q || ""}">
       <select id="fb"><option value="">모든 단계</option>${BANDS.map(([b]) => `<option ${window._fb === b ? "selected" : ""}>${b}</option>`).join("")}</select>
       <select id="ff"><option value="">모든 방식</option>${FMTS.map(f => `<option ${window._ff === f ? "selected" : ""}>${f}</option>`).join("")}</select>
@@ -356,8 +358,8 @@ function render() {
     <div class="tools" style="margin:10px 0 0;justify-content:center"><button class="tab" id="more"></button></div>
   </section>
   <div class="grid two">
-    <div class="card"><h2>계속 시청율과 조회</h2><p class="desc">점 하나 = 영상(공개 1일 지나 분석 숫자 나온 것) · 첫 1~2초를 안 넘긴 비율이 높을수록 위(조회 많음)로 가는지 · 세로는 10배 눈금</p><div class="legend"><span><i style="background:var(--s3)"></i>✓ 벽 수리</span><span><i style="background:var(--s1)"></i>예전 꼴</span></div><div class="chart tall"><canvas id="cEng"></canvas></div></div>
-    <div class="card"><h2>평균 시청률과 조회</h2><p class="desc">점 하나 = 영상(공개 2일 지난 것) · 오른쪽(많이 볼수록)일수록 위로 가는지</p><div class="legend"><span><i style="background:var(--s3)"></i>✓ 벽 수리</span><span><i style="background:var(--s1)"></i>예전 꼴</span></div><div class="chart tall"><canvas id="cScat"></canvas></div></div>
+    <div class="card"><h2>계속 시청율과 조회</h2><p class="desc">점 하나 = 영상(공개 1일 지나 분석 숫자 나온 것) · 첫 1~2초를 안 넘긴 비율이 높을수록 위(조회 많음)로 가는지 · 세로는 10배 눈금</p><div class="legend"><span><i style="background:var(--s3)"></i>✓ 11/21 벽 수리 뒤 판(11/21·11/25·11/26)</span><span><i style="background:var(--s1)"></i>11/20 이전 판</span></div><div class="chart tall"><canvas id="cEng"></canvas></div></div>
+    <div class="card"><h2>평균 시청률과 조회</h2><p class="desc">점 하나 = 영상(공개 2일 지난 것) · 오른쪽(많이 볼수록)일수록 위로 가는지</p><div class="legend"><span><i style="background:var(--s3)"></i>✓ 11/21 벽 수리 뒤 판(11/21·11/25·11/26)</span><span><i style="background:var(--s1)"></i>11/20 이전 판</span></div><div class="chart tall"><canvas id="cScat"></canvas></div></div>
   </div>
   <div class="grid two">
     <div class="card"><h2>유입 경로</h2><p class="desc">채널 시작 이후 조회 비중</p><div class="chart"><canvas id="cTr"></canvas></div></div>
@@ -392,9 +394,12 @@ const OSN = { ANDROID: "안드로이드", IOS: "아이폰·아이패드", WINDOW
 const PLAY = { SHORTS_FEED: "쇼츠 피드에서 재생", BROWSE: "홈·구독 목록에서", WATCH: "영상 페이지에서", EMBEDDED: "다른 사이트에 넣은 것", CHANNEL: "채널 페이지에서", SEARCH: "검색 결과에서" };
 const pctOf = (n, arr) => { const t = (arr || []).reduce((a, x) => a + (x.views || 0), 0) || 1; return (n / t * 100).toFixed(1) + "%"; };
 function relTxt(v) { if (v.rel == null) return "<span class='dim'>-</span>"; const top = Math.max(1, Math.round((1 - v.rel) * 100)); return `<span class="${v.rel >= 0.7 ? "hi" : v.rel < 0.4 ? "lo" : ""}">상위 ${top}%</span>`; }
-const fmtCls = f => f === "벽 수리" ? "fix" : f === "새 꼴" ? "new" : "old";
-const fmtTag = f => f ? `<span class="fmt ${fmtCls(f)}">${f === "벽 수리" ? "✓ 벽 수리" : esc(f)}</span>` : "";
-const FMTS = ["벽 수리", "새 꼴", "진단 반영", "옛 방식"];
+// 11/26 우진 님 "수정·점검한 날짜를 넣어" → 방식 이름 앞에 날짜(board_build.fmt_of). 11/21 벽 수리 뒤 판은 초록 계열, 11/26 분석 반영은 파랑
+const isFix = f => !!f && f.slice(0, 5) >= "11/21";
+const FMT_NOTE = { "11/26 분석 반영": "11/26 상세 비교 분석 반영 — 댕냥: AI 해설 첫 문장만+원래 소리 살림 / 애기: 첫 1초에 상대+질문 첫 자막 / 외국인: 친절·보답 소재", "11/25 점검 소재": "11/25 점검 — 소재 기준 바꿈(외국인 가족+직접 해냄, 애기 아빠 행동→아이 몸 반응, 댕냥 사람 행동→동물 몸 반응)", "11/21 벽 수리": "11/21 벽 대책 — 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리", "11/20 새 꼴": "11/20 새 꼴 판", "11/19 진단 반영": "11/19 진단 반영 판", "11/18 첫판": "처음 만든 판(11/18~19)" };
+const fmtCls = f => !f ? "old" : f.startsWith("11/26") ? "anal" : isFix(f) ? "fix" : f.startsWith("11/20") ? "new" : "old";
+const fmtTag = (f, made) => f ? `<span class="fmt ${fmtCls(f)}" title="${esc((FMT_NOTE[f] || f) + (made ? " · 영상 만든 때 " + made : ""))}">${isFix(f) ? "✓ " : ""}${esc(f)}${made ? `<small> · 만듦 ${esc(made)}</small>` : ""}</span>` : "";
+const FMTS = ["11/26 분석 반영", "11/25 점검 소재", "11/21 벽 수리", "11/20 새 꼴", "11/19 진단 반영", "11/18 첫판"];
 // 11/25 우진 님: 예전 판 '한눈에 보는 막대그래프' 다시 — 예전 bars() 그대로(색만 새 판 산점도와 같게: 초록 = 벽 수리)
 let tip;
 function showTip(e, html) { tip = tip || document.body.appendChild(Object.assign(document.createElement("div"), { className: "tip" })); tip.innerHTML = html; tip.style.display = "block"; const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
@@ -406,7 +411,7 @@ function bars(d) {
   let h = `<div class="hb" role="img" aria-label="편별 조회수"><div class="wall" style="left:${pct(P)}%"><span>벽 넘음 기준 ${P.toLocaleString("ko-KR")}</span></div>`;
   for (const x of v) { const pub = (x.pub_kst || "").slice(5).replace("-", "/");
     h += `<div class="row g-b" data-id="${esc(x.id)}" data-t="${esc(x.title)}" data-v="${x.views}" data-p="${esc(pub)}" data-k="${esc(x.key || "")}"><div class="track">
-    <div class="bar" style="width:${pct(x.views)}%;background:var(${x.fmt === "벽 수리" ? "--s3" : "--s1"})"></div><span class="lab">${fmt(x.views)} · ${esc(pub)}${x.key ? " · " + esc(x.key) : ""}</span></div></div>`; }
+    <div class="bar" style="width:${pct(x.views)}%;background:var(${isFix(x.fmt) ? "--s3" : "--s1"})"></div><span class="lab">${fmt(x.views)} · ${esc(pub)}${x.key ? " · " + esc(x.key) : ""}</span></div></div>`; }
   return h + `</div>`;
 }
 function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
@@ -443,7 +448,7 @@ function table() {
     const st = v.zero ? `<span class="st zero">노출 0</span>` : v.band === "시험 중" ? `<span class="st">시험 중</span>` : `<span class="st ${v.moving ? "up" : "flat"}">${v.moving ? "▲ 성장" : "■ 멈춤"} · ${v.band}</span>`;
     const len = v.len > 40 ? `<span class="lo">${v.len}s</span>` : `${v.len}s`;
     const eng = v.eng == null ? "<span class='dim'>-</span>" : `<span class="${v.eng >= 0.5 ? "hi" : v.eng < 0.4 ? "lo" : ""}">${pct(v.eng * 100)}</span>`;
-    return `<tr data-id="${v.id}"><td class="l title"><div class="tt" title="${esc(v.title)}">${esc(v.title)}</div><div class="p">${v.pub_kst.slice(5)} · ${len}${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt)}</div></td>
+    return `<tr data-id="${v.id}"><td class="l title"><div class="tt" title="${esc(v.title)}">${esc(v.title)}</div><div class="p">${v.pub_kst.slice(5)} · ${len}${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt, v.made)}</div></td>
       <td class="len" data-l="길이">${len}</td><td class="big" data-l="조회"><b>${fmt(v.views)}</b></td><td>${short(v.v1)}</td><td>${short(v.v3)}</td><td data-l="6시간">${short(v.v6)}</td><td data-l="1일">${short(v.v24)}</td><td data-l="2일">${short(v.v48)}</td><td data-l="3일">${short(v.v72)}</td><td data-l="7일">${short(v.v168)}</td>
       <td>${eng}</td><td data-l="평균 시청률">${avp}</td><td>${v.avd == null ? "-" : v.avd + "초"}</td><td data-l="끝까지 본 %">${re}</td>
       <td>${relTxt(v)}</td><td>${fmt(v.likes)}</td><td data-l="좋아요율">${v.lr == null ? "-" : v.lr.toFixed(1)}</td><td data-l="댓글">${fmt(v.comments)}</td><td data-l="공유">${v.shares == null ? "-" : fmt(v.shares)}</td><td>${v.subs == null ? "-" : "+" + v.subs}</td><td class="stc" data-l="단계">${st}</td></tr>`;
@@ -456,7 +461,7 @@ function table() {
     const len = v.len > 40 ? `<span class="lo">${v.len}초</span>` : `${v.len}초`;
     const g = (n, k) => `${n} <b>${v[k] == null ? "-" : short(v[k])}</b>`;
     return `<div class="vc" data-id="${v.id}">
-      <div class="vc-top"><div><div class="vc-title">${esc(v.title)}</div><div class="vc-meta">${v.pub_kst.slice(5)} · ${len}${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt)}</div></div>${st}</div>
+      <div class="vc-top"><div><div class="vc-title">${esc(v.title)}</div><div class="vc-meta">${v.pub_kst.slice(5)} · ${len}${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt, v.made)}</div></div>${st}</div>
       <div class="vc-main"><div class="vc-views">${fmt(v.views)}<small>회</small></div><div class="vc-grow">${g("1시간", "v1")} · ${g("6시간", "v6")} · ${g("1일", "v24")}</div></div>
       <div class="vc-stats"><div><span>계속 시청율</span>${eng}</div><div><span>평균 시청률</span>${avp}</div><div><span>끝까지 본</span>${re}</div><div><span>평균 시청</span><b>${v.avd == null ? "-" : v.avd + "초"}</b></div><div><span>좋아요</span><b>${fmt(v.likes)}</b></div><div><span>공유 · 구독</span><b>${v.shares == null ? "-" : fmt(v.shares)} · ${v.subs == null ? "-" : "+" + v.subs}</b></div></div>
     </div>`;
@@ -478,7 +483,7 @@ function chartsDraw() {
       scales: { x: Object.assign({ grid: { color: css("--grid") }, ticks: { color: css("--muted"), font: { size: 11 } }, border: { color: css("--axis") }, title: { display: true, text: xTitle, color: css("--muted") } }, xOpts),
         y: { type: "logarithmic", grid: { color: css("--grid") }, ticks: { color: css("--muted"), font: { size: 11 }, callback: v => [100, 1000, 10000, 100000, 1000000].includes(v) ? short(v) : "" }, border: { display: false } } } }) });
   const empty = (id, msg) => $(id).parentElement.insertAdjacentHTML("beforeend", `<p class='desc' style='position:absolute;top:42%;width:100%;text-align:center'>${msg}</p>`);
-  const fc = v => v.fmt === "벽 수리" ? s3 : s1;
+  const fc = v => isFix(v.fmt) ? s3 : s1;
   const eg = d.videos.filter(v => v.eng != null && v.age_h >= 24);
   if (eg.length) mk($("#cEng"), dot(eg.map(v => ({ x: v.eng * 100, y: Math.max(1, v.views), t: (v.key ? v.key + " " : "") + v.title, xl: pct(v.eng * 100), c: fc(v) })), "계속 시청율(%)"));
   else empty("#cEng", "분석 숫자가 아직 없어요");
@@ -531,14 +536,14 @@ async function showSched() {
       const x = r[c.prof] || { kind: "빈 칸" };
       if (x.kind === "빈 칸") { rows += `<td>${r.past ? "<span class='dim'>–</span>" : `<div class="cell c-empty"><div class="k">빈 칸</div></div>`}</td>`; continue; }
       const meta = [x.key, x.views != null ? fmt(x.views) + "회" : ""].filter(Boolean).map(esc).join(" · ");
-      rows += `<td><div class="cell ${CLS[x.kind] || ""}"><div class="k">${esc(LAB[x.kind] || x.kind)}</div>${esc(x.title || "(제목 미정)")}${meta ? `<div class="m">${meta}</div>` : ""}${x.fmt ? `<div style="margin-top:3px">${fmtTag(x.fmt)}</div>` : ""}</div></td>`;
+      rows += `<td><div class="cell ${CLS[x.kind] || ""}"><div class="k">${esc(LAB[x.kind] || x.kind)}</div>${esc(x.title || "(제목 미정)")}${meta ? `<div class="m">${meta}</div>` : ""}${x.fmt ? `<div style="margin-top:3px">${fmtTag(x.fmt, x.made)}</div>` : ""}</div></td>`;
     }
     rows += `</tr>`;
   });
   const kpis = chs.map(c => `<div class="card kpi"><div class="lab">${esc(c.name)} 다음 공개</div><div class="val">${next[c.prof] ? esc(next[c.prof].slice(6)) : "없음"}</div>
       <div class="sub">${next[c.prof] ? esc(next[c.prof].slice(0, 5)) + " · " : ""}유튜브 예약 ${c.scheduled.length} · 예약 대기 ${(c.pending || []).length} · <span class="${empty[c.prof] ? "lo" : ""}">앞으로 빈 칸 ${empty[c.prof] || 0}</span></div></div>`).join("");
   const list = (title, desc, arr, up) => `<section class="card"><h2>${title} (${arr.length})</h2><p class="desc">${desc}</p><div class="sch"><table><thead><tr><th class="tm">칸</th><th style="width:96px">채널</th><th>제목</th>${up ? `<th class="tm">올라갈 때</th>` : ""}<th style="width:104px">방식</th></tr></thead><tbody>${
-    arr.map(s => `<tr><td class="tm">${esc(s.at)}</td><td>${esc(s.c.name)}</td><td>${esc(s.title)}${s.key ? `<div class="dim" style="font-size:12px">${esc(s.key)}</div>` : ""}</td>${up ? `<td class="tm">${esc(s.up)}</td>` : ""}<td>${fmtTag(s.fmt)}</td></tr>`).join("") || `<tr><td colspan="5" class="dim">없음</td></tr>`}</tbody></table></div></section>`;
+    arr.map(s => `<tr><td class="tm">${esc(s.at)}</td><td>${esc(s.c.name)}</td><td>${esc(s.title)}${s.key ? `<div class="dim" style="font-size:12px">${esc(s.key)}</div>` : ""}</td>${up ? `<td class="tm">${esc(s.up)}</td>` : ""}<td>${fmtTag(s.fmt, s.made)}</td></tr>`).join("") || `<tr><td colspan="5" class="dim">없음</td></tr>`}</tbody></table></div></section>`;
   const sch = chs.flatMap(c => c.scheduled.map(s => ({ ...s, c }))).sort((a, b) => a.at.localeCompare(b.at));
   const pend = chs.flatMap(c => (c.pending || []).map(s => ({ ...s, c }))).sort((a, b) => a.at.localeCompare(b.at));
   view.innerHTML = `<div class="grid kpis3">${kpis}</div>
@@ -548,7 +553,7 @@ async function showSched() {
     <div class="sch"><table><thead><tr><th class="tm">칸</th>${chs.map(c => `<th>${esc(c.name)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
     <div class="sch-legend"><span><i style="background:var(--chip)"></i>공개됨(조회수)</span><span><i style="background:rgba(42,120,214,0.18)"></i>✓ 유튜브 예약됨 — 공개 시각이 걸린 편</span>
       <span><i style="background:rgba(250,178,25,0.28)"></i>⏳ 예약 대기 — 칸 1시간 전 자동 업로드</span><span><i style="border:1px dashed var(--crit)"></i>빈 칸 — 채울 편 없음</span></div>
-    <p class="desc" style="margin:8px 0 0">칸 아래 표시: <span class="fmt fix">✓ 벽 수리</span> = 11/21 벽 대책 반영 판 · <span class="fmt old">진단 반영·옛 방식</span> = 벽에 박히던 예전 꼴(이미 유튜브에 예약돼 못 고친 편 포함) · <span class="fmt new">새 꼴</span> = 11/20 판</p>
+    <p class="desc" style="margin:8px 0 0">칸 아래 표시 — 방식(이름 앞 날짜 = 고치거나 점검한 날): <span class="fmt anal">11/26 분석 반영</span> 댕냥 AI 해설 첫 문장만+원래 소리·애기 첫 1초 상대+질문 첫 자막·외국인 친절·보답 소재 · <span class="fmt fix">✓ 11/25 점검 소재</span> 소재 기준 바꿈 · <span class="fmt fix">✓ 11/21 벽 수리</span> 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리 · <span class="fmt new">11/20 새 꼴</span> · <span class="fmt old">11/19 진단 반영 · 11/18 첫판</span> 예전 꼴. <b>만듦</b> = 그 영상 파일을 마지막으로 렌더한 때.</p>
   </section>
   ${list("✓ 유튜브에 예약된 편", "유튜브에 올라가 공개 시각이 걸려 있음 — 그 시각에 자동 공개", sch)}
   ${list("⏳ 가지고 있는 예약 대기 편", "영상은 다 됐지만 유튜브엔 아직 없음 — 칸 1시간 전에 자동으로 올라가 예약됨", pend, true)}`;
@@ -713,7 +718,7 @@ function detail(id) {
   dcharts.forEach(c => c.destroy()); dcharts = [];
   const tr = v.traffic || {}, tt = Object.values(tr).reduce((a, b) => a + b, 0) || 1;
   dlg.innerHTML = `<div class="dlg-h"><div><h3>${esc(v.title)}</h3><div class="upd">${v.pub_kst} · ${v.len}초 · <a href="https://youtu.be/${v.id}" target="_blank" rel="noopener">영상 열기</a></div></div><button class="x" aria-label="닫기">×</button></div>
-    <div class="facts"><span>조회 <b>${fmt(v.views)}</b>${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt)}</span><span>1시간 <b>${short(v.v1)}</b> · 3시간 <b>${short(v.v3)}</b> · 6시간 <b>${short(v.v6)}</b> · 1일 <b>${short(v.v24)}</b> · 2일 <b>${short(v.v48)}</b> · 3일 <b>${short(v.v72)}</b> · 7일 <b>${short(v.v168)}</b></span>
+    <div class="facts"><span>조회 <b>${fmt(v.views)}</b>${v.key ? " · " + esc(v.key) : ""} ${fmtTag(v.fmt, v.made)}</span><span>1시간 <b>${short(v.v1)}</b> · 3시간 <b>${short(v.v3)}</b> · 6시간 <b>${short(v.v6)}</b> · 1일 <b>${short(v.v24)}</b> · 2일 <b>${short(v.v48)}</b> · 3일 <b>${short(v.v72)}</b> · 7일 <b>${short(v.v168)}</b></span>
       <span>계속 시청율 <b>${v.eng == null ? "-" : pct(v.eng * 100)}</b></span><span>평균 시청률 <b>${pct(v.avp)}</b> · <b>${v.avd ?? "-"}초</b></span><span>끝까지 본 <b>${v.r_end == null ? "-" : Math.round(v.r_end * 100) + "%"}</b></span><span>첫 장면 재생 <b>${v.r_start == null ? "-" : "평균 " + v.r_start.toFixed(1) + "번"}</b> <span class="dim">(1번 넘으면 다시 본 사람이 많음)</span></span>
       <span>좋아요 <b>${fmt(v.likes)}</b> · 댓글 <b>${fmt(v.comments)}</b> · 공유 <b>${v.shares ?? "-"}</b> · 구독 <b>+${v.subs ?? "-"}</b></span>
       <span>쇼츠 피드 <b>${pct((tr.SHORTS || 0) / tt * 100)}</b> · 검색 <b>${pct((tr.YT_SEARCH || 0) / tt * 100)}</b></span>
