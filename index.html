@@ -219,6 +219,7 @@ dialog::backdrop { background: rgba(0,0,0,0.45); }
 .fmt.new { border-color: var(--ink2); color: var(--ink); }
 .fmt.old { border-color: var(--crit); color: var(--crit); font-weight: 400; }
 .fmt.anal { border-color: #2f6fd6; color: #2f6fd6; }
+.fmt.test { border-color: #8a3fd1; color: #8a3fd1; background: rgba(138,63,209,.08); }
 .fmt small { font-weight: 400; opacity: .8; }
 .sch .c-empty { border: 1px dashed var(--crit); } .sch .c-empty .k { color: var(--crit); margin: 0; }
 .st.zero { color: var(--crit); font-weight: 600; }
@@ -396,10 +397,10 @@ const pctOf = (n, arr) => { const t = (arr || []).reduce((a, x) => a + (x.views 
 function relTxt(v) { if (v.rel == null) return "<span class='dim'>-</span>"; const top = Math.max(1, Math.round((1 - v.rel) * 100)); return `<span class="${v.rel >= 0.7 ? "hi" : v.rel < 0.4 ? "lo" : ""}">상위 ${top}%</span>`; }
 // 11/26 우진 님 "수정·점검한 날짜를 넣어" → 방식 이름 앞에 날짜(board_build.fmt_of). 11/21 벽 수리 뒤 판은 초록 계열, 11/26 분석 반영은 파랑
 const isFix = f => !!f && f.slice(0, 5) >= "11/21";
-const FMT_NOTE = { "11/26 분석 반영": "11/26 상세 비교 분석 반영 — 댕냥: AI 해설 첫 문장만+원래 소리 살림 / 애기: 첫 1초에 상대+질문 첫 자막 / 외국인: 친절·보답 소재", "11/25 점검 소재": "11/25 점검 — 소재 기준 바꿈(외국인 가족+직접 해냄, 애기 아빠 행동→아이 몸 반응, 댕냥 사람 행동→동물 몸 반응)", "11/21 벽 수리": "11/21 벽 대책 — 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리", "11/20 새 꼴": "11/20 새 꼴 판", "11/19 진단 반영": "11/19 진단 반영 판", "11/18 첫판": "처음 만든 판(11/18~19)" };
-const fmtCls = f => !f ? "old" : f.startsWith("11/26") ? "anal" : isFix(f) ? "fix" : f.startsWith("11/20") ? "new" : "old";
-const fmtTag = (f, made) => f ? `<span class="fmt ${fmtCls(f)}" title="${esc((FMT_NOTE[f] || f) + (made ? " · 영상 만든 때 " + made : ""))}">${isFix(f) ? "✓ " : ""}${esc(f)}${made ? `<small> · 만듦 ${esc(made)}</small>` : ""}</span>` : "";
-const FMTS = ["11/26 분석 반영", "11/25 점검 소재", "11/21 벽 수리", "11/20 새 꼴", "11/19 진단 반영", "11/18 첫판"];
+const FMT_NOTE = { "11/29 원작자 시험": "11/29 우진 님 시험 — 10만+ 터진 편(←표시)과 같은 원작자의 다른 10만+ 원본을 같은 편집 레시피로. 소재(원작자) 덕인지 편집 덕인지 가르기", "11/26 분석 반영": "11/26 상세 비교 분석 반영 — 댕냥: AI 해설 첫 문장만+원래 소리 살림 / 애기: 첫 1초에 상대+질문 첫 자막 / 외국인: 친절·보답 소재", "11/25 점검 소재": "11/25 점검 — 소재 기준 바꿈(외국인 가족+직접 해냄, 애기 아빠 행동→아이 몸 반응, 댕냥 사람 행동→동물 몸 반응)", "11/21 벽 수리": "11/21 벽 대책 — 위 제목을 결과 직전에서 끊기·0초 얼굴 크게·0초부터 소리", "11/20 새 꼴": "11/20 새 꼴 판", "11/19 진단 반영": "11/19 진단 반영 판", "11/18 첫판": "처음 만든 판(11/18~19)" };
+const fmtCls = f => !f ? "old" : f.startsWith("11/29") ? "test" : f.startsWith("11/26") ? "anal" : isFix(f) ? "fix" : f.startsWith("11/20") ? "new" : "old";
+const fmtTag = (f, made) => f ? `<span class="fmt ${fmtCls(f)}" title="${esc((FMT_NOTE[f] || FMT_NOTE[f.split(" ←")[0]] || f) + (made ? " · 영상 만든 때 " + made : ""))}">${isFix(f) ? "✓ " : ""}${esc(f)}${made ? `<small> · 만듦 ${esc(made)}</small>` : ""}</span>` : "";
+const FMTS = ["11/29 원작자 시험", "11/26 분석 반영", "11/25 점검 소재", "11/21 벽 수리", "11/20 새 꼴", "11/19 진단 반영", "11/18 첫판"];
 // 11/25 우진 님: 예전 판 '한눈에 보는 막대그래프' 다시 — 예전 bars() 그대로(색만 새 판 산점도와 같게: 초록 = 벽 수리)
 let tip;
 function showTip(e, html) { tip = tip || document.body.appendChild(Object.assign(document.createElement("div"), { className: "tip" })); tip.innerHTML = html; tip.style.display = "block"; const x = Math.min(e.clientX + 12, innerWidth - tip.offsetWidth - 8); tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px"; }
@@ -427,7 +428,7 @@ function spark(v) {
 function table() {
   const q = (window._q || "").trim(), fb = window._fb || "", ff = window._ff || "";
   let V = current.videos.map(v => Object.assign(v, { lr: v.views ? v.likes / v.views * 100 : null }))
-    .filter(v => (!q || v.title.includes(q) || (v.key || "").includes(q)) && (!fb || v.band === fb) && (!ff || v.fmt === ff));
+    .filter(v => (!q || v.title.includes(q) || (v.key || "").includes(q)) && (!fb || v.band === fb) && (!ff || (v.fmt || "").startsWith(ff)));
   const order = Object.fromEntries(BANDS.map(([b], i) => [b, i]));
   V.sort((a, b) => {
     let x = a[sortKey], y = b[sortKey];
